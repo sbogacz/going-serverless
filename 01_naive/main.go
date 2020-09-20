@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	s3Client *s3.S3
+	s3Client *s3.Client
 	cfg      = &config{}
 )
 
@@ -84,7 +84,7 @@ func postFile(ctx context.Context, data string) (string, error) {
 	input := putInput(key, data)
 
 	putReq := s3Client.PutObjectRequest(input)
-	if _, err = putReq.Send(); err != nil {
+	if _, err = putReq.Send(ctx); err != nil {
 		return "", errors.Wrap(err, "failed to put file in S3")
 	}
 	return key, nil
@@ -93,7 +93,7 @@ func postFile(ctx context.Context, data string) (string, error) {
 func getFile(ctx context.Context, key string) (string, error) {
 	input := getInput(key)
 	getReq := s3Client.GetObjectRequest(input)
-	resp, err := getReq.Send()
+	resp, err := getReq.Send(ctx)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			if aerr.Code() == s3.ErrCodeNoSuchKey {
@@ -114,7 +114,7 @@ func getFile(ctx context.Context, key string) (string, error) {
 func deleteFile(ctx context.Context, key string) error {
 	input := deleteInput(key)
 	deleteReq := s3Client.DeleteObjectRequest(input)
-	_, err := deleteReq.Send()
+	_, err := deleteReq.Send(ctx)
 	if err != nil {
 		return newInternalServerErr(err, "failed to delete file from S3")
 	}

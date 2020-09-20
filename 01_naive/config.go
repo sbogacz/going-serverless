@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -16,8 +15,4 @@ func (c *config) ParseEnv() {
 	if c.BucketName == "" {
 		log.Fatal("bucket name must be specified")
 	}
-}
-
-func flagName(name string) string {
-	return fmt.Sprintf("EXAMPLE_APP_%s", name)
 }
