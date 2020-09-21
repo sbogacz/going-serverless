@@ -6,6 +6,35 @@ import (
 	"github.com/pulumi/pulumi/sdk/v2/go/pulumi"
 )
 
+// New takes a pulumi context, path to the zipped binary, and name and it
+// returns a lambda.Function on success
+func New(ctx *pulumi.Context, path, name string) (*lambda.Function, error) {
+	roleDependencies, roleARN, err := createRole(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set arguments for constructing the function resource.
+	args := &lambda.FunctionArgs{
+		Handler: pulumi.String("handler"),
+		Role:    *roleARN,
+		Runtime: pulumi.String("go1.x"),
+		Code:    pulumi.NewFileArchive(path),
+	}
+
+	// Create the lambda using the args.
+	function, err := lambda.NewFunction(
+		ctx,
+		name,
+		args,
+		pulumi.DependsOn(roleDependencies),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return function, nil
+}
+
 func createRole(ctx *pulumi.Context) ([]pulumi.Resource, *pulumi.StringOutput, error) {
 
 	// Create an IAM role.
@@ -47,31 +76,4 @@ func createRole(ctx *pulumi.Context) ([]pulumi.Resource, *pulumi.StringOutput, e
 	}
 
 	return []pulumi.Resource{logPolicy}, &role.Arn, nil
-}
-
-func New(ctx *pulumi.Context, path, name string) (*lambda.Function, error) {
-	roleDependencies, roleARN, err := createRole(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// Set arguments for constructing the function resource.
-	args := &lambda.FunctionArgs{
-		Handler: pulumi.String("handler"),
-		Role:    *roleARN,
-		Runtime: pulumi.String("go1.x"),
-		Code:    pulumi.NewFileArchive(path),
-	}
-
-	// Create the lambda using the args.
-	function, err := lambda.NewFunction(
-		ctx,
-		name,
-		args,
-		pulumi.DependsOn(roleDependencies),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return function, nil
 }
