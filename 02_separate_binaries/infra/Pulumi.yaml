@@ -1,0 +1,3 @@
+name: 02_separate_binaries
+runtime: go
+description: The infra needed for the toy server, Lamba, APIGW, and S3
