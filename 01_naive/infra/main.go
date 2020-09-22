@@ -3,22 +3,38 @@ package main
 import (
 	"infra/apigw"
 	"infra/lambda"
+	"infra/s3"
 
 	"github.com/pulumi/pulumi-aws/sdk/v3/go/aws"
 	"github.com/pulumi/pulumi/sdk/v2/go/pulumi"
 )
 
+var (
+	name  = "going-serverless"
+	phase = "01"
+)
+
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
+		s3Bucket, err := s3.New(ctx, name, phase)
+		if err != nil {
+			return err
+		}
 
 		// create the lambda function
-		function, err := lambda.New(ctx, "./../handler.zip", "naive")
+		lambdaCfg := lambda.Config{
+			Name:      name,
+			TalkPhase: phase,
+			Path:      "./../handler.zip",
+			Bucket:    s3Bucket,
+		}
+		function, err := lambda.New(ctx, lambdaCfg)
 		if err != nil {
 			return err
 		}
 
 		// Create a new API Gateway backed by our Lambda Function
-		gateway, err := apigw.New(ctx, "01_naive", function)
+		gateway, err := apigw.New(ctx, name, phase, function)
 		if err != nil {
 			return err
 		}

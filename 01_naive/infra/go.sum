@@ -148,8 +148,17 @@ github.com/prometheus/common v0.4.0/go.mod h1:TNfzLD0ON7rHzMJeJkieUDPYmFC7Snx/y8
 github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=
 github.com/prometheus/procfs v0.0.0-20190507164030-5867b95ac084/go.mod h1:TjEm7ze935MbeOT/UhFTIMYKhuLP4wbCsTZCD3I8kEA=
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
+github.com/pulumi/pulumi v1.14.1 h1:eLVGwyUzjbibKCE5lggFyE01CB68yt5G6CJFCJDwoVI=
+github.com/pulumi/pulumi v2.10.2+incompatible h1:grCyWQYI1qeAo3Q5Qjx0F3PAXr/9+tMVyQf0nR9Nex0=
+github.com/pulumi/pulumi-aws v1.31.0 h1:m3RXWnrV6jzfHJdGc6iGouoQmCtNo69VxTq9Z3QPm2w=
+github.com/pulumi/pulumi-aws v3.4.0+incompatible h1:EG+x/SyU0QA8WbIL/zEZHpBiIHgUaoLXDF//L91rMMk=
+github.com/pulumi/pulumi-aws/sdk v1.31.0 h1:E6RfPg46zsDJLidyh1vC7Gq9M5zFbjnezJqcG7zKchw=
+github.com/pulumi/pulumi-aws/sdk v1.31.0/go.mod h1:8Z92TlFer1SqiPUgT2D/DwXrM9lOaevADPaQdB3BF4U=
 github.com/pulumi/pulumi-aws/sdk/v3 v3.3.0 h1:Cc8mznMQ9Awjy/IkUoH5gMk/iXhcsAdo4a84yz9RX0g=
 github.com/pulumi/pulumi-aws/sdk/v3 v3.3.0/go.mod h1:Tiu0MSxPkufZDbNTXNMb8cKiIRWLt+7spM3DPuzLcBc=
+github.com/pulumi/pulumi/sdk v1.13.1/go.mod h1:0jjygtqEwLnjNEL3zIn3ynjT/37ZJ42DZE6k2+2NAUM=
+github.com/pulumi/pulumi/sdk v1.14.1 h1:FnUPMgO2AgqvKzSBOy3F2X4nJ8n/SaXCOP2eYSNkAxk=
+github.com/pulumi/pulumi/sdk v1.14.1/go.mod h1:7HttsBa/x9udp5/sO8r/ibSpoQ7/zFo7a16zHWHktZ4=
 github.com/pulumi/pulumi/sdk/v2 v2.2.1/go.mod h1:QNbWpL4gvf3X0lUFT7TXA2Jo1ff/Ti2l97AyFGYwvW4=
 github.com/pulumi/pulumi/sdk/v2 v2.10.1 h1:MDRQVoXfPJEcLDtx/U7beJKloM2o8+fbRhvF3XJEuU4=
 github.com/pulumi/pulumi/sdk/v2 v2.10.1/go.mod h1:EED7KCDOohYIewUppsav5KHTFTmfYGqUFib1uRvYdWQ=
@@ -169,6 +178,7 @@ github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasO
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/cast v1.3.0/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
+github.com/spf13/cobra v0.0.6/go.mod h1:/6GTrnGXV9HjY+aR4k0oJ5tcvakLuG6EuKReYlHNrgE=
 github.com/spf13/cobra v1.0.0 h1:6m/oheQuQ13N9ks4hubMG6BnvwOeaJrqSPLahSnczz8=
 github.com/spf13/cobra v1.0.0/go.mod h1:/6GTrnGXV9HjY+aR4k0oJ5tcvakLuG6EuKReYlHNrgE=
 github.com/spf13/jwalterweatherman v1.0.0/go.mod h1:cQK4TGJAtQXfYWX+Ddv3mKDzgVb68N+wFjFa4jdeBTo=

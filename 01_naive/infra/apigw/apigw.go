@@ -11,7 +11,8 @@ import (
 
 // New takes a pulumi Context, the name of the API, a name for the Gateway, and a lambda function
 // to configure as the backend of the gateway, and returns a configured API GW
-func New(ctx *pulumi.Context, name string, function *lambda.Function) (*apigateway.RestApi, error) {
+func New(ctx *pulumi.Context, name, talkPhase string, function *lambda.Function) (*apigateway.RestApi, error) {
+	name = fmt.Sprintf("%s-%s", name, talkPhase)
 	account, err := aws.GetCallerIdentity(ctx)
 	if err != nil {
 		return nil, err
@@ -26,6 +27,10 @@ func New(ctx *pulumi.Context, name string, function *lambda.Function) (*apigatew
 	gateway, err := apigateway.NewRestApi(ctx, name, &apigateway.RestApiArgs{
 		Name:        pulumi.String(name),
 		Description: pulumi.String(fmt.Sprintf("An API Gateway for the %s function", name)),
+		Tags: pulumi.StringMap{
+			"project":    pulumi.String("going-serverless-talk"),
+			"talk-phase": pulumi.String(talkPhase),
+		},
 		Policy: pulumi.String(`{
   "Version": "2012-10-17",
   "Statement": [

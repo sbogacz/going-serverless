@@ -1,15 +1,27 @@
 package lambda
 
 import (
+	"fmt"
+
 	"github.com/pulumi/pulumi-aws/sdk/v3/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v3/go/aws/lambda"
+	"github.com/pulumi/pulumi-aws/sdk/v3/go/aws/s3"
 	"github.com/pulumi/pulumi/sdk/v2/go/pulumi"
 )
 
-// New takes a pulumi context, path to the zipped binary, and name and it
+type Config struct {
+	Name      string
+	Path      string
+	TalkPhase string
+	Bucket    *s3.Bucket
+}
+
+// New takes a pulumi context, cfg.Path to the zipped binary, and cfg.Name and it
 // returns a lambda.Function on success
-func New(ctx *pulumi.Context, path, name string) (*lambda.Function, error) {
-	roleDependencies, roleARN, err := createRole(ctx)
+func New(ctx *pulumi.Context, cfg Config) (*lambda.Function, error) {
+	name := fmt.Sprintf("%s-%s", cfg.Name, cfg.TalkPhase)
+
+	roleDependencies, roleARN, err := createRole(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +31,15 @@ func New(ctx *pulumi.Context, path, name string) (*lambda.Function, error) {
 		Handler: pulumi.String("handler"),
 		Role:    *roleARN,
 		Runtime: pulumi.String("go1.x"),
-		Code:    pulumi.NewFileArchive(path),
+		Code:    pulumi.NewFileArchive(cfg.Path),
+		Timeout: pulumi.Int(5),
+		Tags: pulumi.StringMap{
+			"project":    pulumi.String("going-serverless-talk"),
+			"talk-phase": pulumi.String(cfg.TalkPhase),
+		},
+		Environment: lambda.FunctionEnvironmentArgs{pulumi.StringMap{
+			"BUCKET_NAME": cfg.Bucket.Bucket,
+		}},
 	}
 
 	// Create the lambda using the args.
@@ -27,7 +47,7 @@ func New(ctx *pulumi.Context, path, name string) (*lambda.Function, error) {
 		ctx,
 		name,
 		args,
-		pulumi.DependsOn(roleDependencies),
+		pulumi.DependsOn(append(roleDependencies, cfg.Bucket)),
 	)
 	if err != nil {
 		return nil, err
@@ -35,10 +55,11 @@ func New(ctx *pulumi.Context, path, name string) (*lambda.Function, error) {
 	return function, nil
 }
 
-func createRole(ctx *pulumi.Context) ([]pulumi.Resource, *pulumi.StringOutput, error) {
+func createRole(ctx *pulumi.Context, cfg Config) ([]pulumi.Resource, *pulumi.StringOutput, error) {
+	name := fmt.Sprintf("%s-%s", cfg.Name, cfg.TalkPhase)
 
 	// Create an IAM role.
-	role, err := iam.NewRole(ctx, "task-exec-role", &iam.RoleArgs{
+	role, err := iam.NewRole(ctx, fmt.Sprintf("%s-lambda-exec-role", name), &iam.RoleArgs{
 		AssumeRolePolicy: pulumi.String(`{
 				"Version": "2012-10-17",
 				"Statement": [{
@@ -56,7 +77,7 @@ func createRole(ctx *pulumi.Context) ([]pulumi.Resource, *pulumi.StringOutput, e
 	}
 
 	// Attach a policy to allow writing logs to CloudWatch
-	logPolicy, err := iam.NewRolePolicy(ctx, "lambda-log-policy", &iam.RolePolicyArgs{
+	logPolicy, err := iam.NewRolePolicy(ctx, fmt.Sprintf("%s-lambda-log-policy", name), &iam.RolePolicyArgs{
 		Role: role.Name,
 		Policy: pulumi.String(`{
                 "Version": "2012-10-17",
@@ -75,5 +96,35 @@ func createRole(ctx *pulumi.Context) ([]pulumi.Resource, *pulumi.StringOutput, e
 		return nil, nil, err
 	}
 
-	return []pulumi.Resource{logPolicy}, &role.Arn, nil
+	s3PolicyFmt := `{
+                "Version": "2012-10-17",
+                "Statement": [
+					{
+						"Effect": "Allow",
+						"Action": [
+							"s3:ListBucket"
+						],
+						"Resource": "%s"
+					},
+					{
+						"Action": [
+							"s3:PutObject",
+							"s3:GetObject",
+							"s3:DeleteObject"
+						],
+						"Effect": "Allow",
+						"Resource": "%s/*"
+					}
+				]
+            }`
+	// attach a policy for the S3 bucket
+	lambdaPolicy, err := iam.NewRolePolicy(ctx, fmt.Sprintf("%s-lambda-s3-policy", name), &iam.RolePolicyArgs{
+		Role:   role.Name,
+		Policy: pulumi.Sprintf(s3PolicyFmt, cfg.Bucket.Arn, cfg.Bucket.Arn),
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return []pulumi.Resource{logPolicy, lambdaPolicy}, &role.Arn, nil
 }
