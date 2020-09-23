@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/gofrs/uuid"
 	"github.com/phayes/freeport"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
 

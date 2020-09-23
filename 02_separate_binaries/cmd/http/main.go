@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/external"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/pkg/errors"
-	"github.com/sbogacz/gophercon18-kickoff-talk/third/internal/s3store"
-	"github.com/sbogacz/gophercon18-kickoff-talk/third/internal/toy"
+	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/s3store"
+	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/toy"
 	"github.com/urfave/cli"
 )
 

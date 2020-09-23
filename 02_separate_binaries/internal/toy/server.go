@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/gofrs/uuid"
-	"github.com/sbogacz/gophercon18-kickoff-talk/third/internal/httperrs"
+	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/httperrs"
 )
 
 // Server represents all of the config and clients

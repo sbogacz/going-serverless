@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/awslabs/aws-lambda-go-api-proxy/chi"
-	"github.com/sbogacz/gophercon18-kickoff-talk/third/internal/s3store"
-	"github.com/sbogacz/gophercon18-kickoff-talk/third/internal/toy"
+	chiadapter "github.com/awslabs/aws-lambda-go-api-proxy/chi"
+	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/s3store"
+	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/toy"
+	log "github.com/sirupsen/logrus"
 )
 
 var (

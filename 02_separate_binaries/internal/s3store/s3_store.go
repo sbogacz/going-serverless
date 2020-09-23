@@ -9,19 +9,19 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/awserr"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/pkg/errors"
-	"github.com/sbogacz/gophercon18-kickoff-talk/third/internal/httperrs"
+	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/httperrs"
 )
 
 // S3Store is an S3 backed implementation of our Store
 // interaface
 type S3Store struct {
-	client *s3.S3
+	client *s3.Client
 	bucket string
 }
 
 // New takes an S3 client and a bucket name, and
 // returns the S3 implementation of the Store interface
-func New(client *s3.S3, bucket string) *S3Store {
+func New(client *s3.Client, bucket string) *S3Store {
 	return &S3Store{
 		client: client,
 		bucket: bucket,
@@ -34,7 +34,7 @@ func (ss *S3Store) Set(ctx context.Context, key, data string) error {
 	input := putInput(ss.bucket, key, data)
 
 	putReq := ss.client.PutObjectRequest(input)
-	if _, err := putReq.Send(); err != nil {
+	if _, err := putReq.Send(ctx); err != nil {
 		return errors.Wrap(err, "failed to put file in S3")
 	}
 	return nil
@@ -44,7 +44,7 @@ func (ss *S3Store) Set(ctx context.Context, key, data string) error {
 func (ss *S3Store) Get(ctx context.Context, key string) (string, error) {
 	input := getInput(ss.bucket, key)
 	getReq := ss.client.GetObjectRequest(input)
-	resp, err := getReq.Send()
+	resp, err := getReq.Send(ctx)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			if aerr.Code() == s3.ErrCodeNoSuchKey {
@@ -66,7 +66,7 @@ func (ss *S3Store) Get(ctx context.Context, key string) (string, error) {
 func (ss *S3Store) Del(ctx context.Context, key string) error {
 	input := deleteInput(ss.bucket, key)
 	deleteReq := ss.client.DeleteObjectRequest(input)
-	_, err := deleteReq.Send()
+	_, err := deleteReq.Send(ctx)
 	if err != nil {
 		return httperrs.InternalServer(err, "failed to delete file from S3")
 	}

@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/pkg/errors"
-	"github.com/sbogacz/gophercon18-kickoff-talk/third/internal/httperrs"
+	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/httperrs"
 )
 
 // LocalStore is an in-memory implementation of our
