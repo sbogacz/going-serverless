@@ -3,13 +3,13 @@ SHELL=/bin/bash -o pipefail
 GO_VERSION ?= 1.15
 NAMESPACE=sbogacz
 APPNAME=going-serverless
-TALK_PHASE=02_separate_binaries
+TALK_PHASE=03_separate_binaries_and_gocloud
 BINARY ?= handler
 
 all: build
 
 .PHONY: build
-build: build-lambda
+build: build-aws build-gcp
 
 .PHONY: build-local
 build-local:
@@ -26,8 +26,8 @@ build-gcp:
 	cd tmp && zip -r gcp-$(BINARY).zip . && cp *.zip ../ && cd -
 	rm -rf tmp
 
-.PHONY: build-lambda
-build-lambda:
+.PHONY: build-aws
+build-aws:
 	GOOS=linux go build -o $(BINARY) \
 		github.com/$(NAMESPACE)/$(APPNAME)/$(TALK_PHASE)/cmd/lambda
 	zip aws-$(BINARY).zip $(BINARY)
