@@ -75,7 +75,7 @@ func getLocalStore() (*blob.Bucket, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	store, err := fileblob.NewBucket(dir)
+	store, err := fileblob.OpenBucket(dir, nil)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to initialize local store")
 	}
@@ -90,7 +90,7 @@ func getS3Store() (*blob.Bucket, func(), error) {
 		Credentials: credentials.NewEnvCredentials(),
 	}
 	sess := session.Must(session.NewSession(cfg))
-	store, err := s3blob.OpenBucket(context.TODO(), sess, config.BucketName)
+	store, err := s3blob.OpenBucket(context.TODO(), sess, config.BucketName, nil)
 	if err != nil {
 		return nil, nil, err
 	}
