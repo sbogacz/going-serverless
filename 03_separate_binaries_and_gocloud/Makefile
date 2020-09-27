@@ -18,8 +18,13 @@ build-local:
 
 .PHONY: build-gcp
 build-gcp:
-	go build -o gcp-$(BINARY) \
-		github.com/$(NAMESPACE)/$(APPNAME)/$(TALK_PHASE)/cmd/gcp
+	mkdir tmp
+	cp cmd/gcp/main.go tmp/function.go
+	cp -R internal tmp/
+	cp go.mod tmp/
+	cp go.sum tmp/
+	cd tmp && zip -r gcp-$(BINARY).zip . && cp *.zip ../ && cd -
+	rm -rf tmp
 
 .PHONY: build-lambda
 build-lambda:
@@ -30,4 +35,4 @@ build-lambda:
 .PHONY: clean
 clean: 
 	go clean
-	rm -rf $(BINARY) gcp-$BINARY aws-$(BINARY).zip 
+	rm -rf $(BINARY) *.zip 

@@ -32,7 +32,7 @@ func main() {
 		gcpFunctionCfg := function.GCPFunctionConfig{
 			Name:       name,
 			TalkPhase:  phase,
-			Path:       "./../aws-handler.zip",
+			Path:       "./../gcp-handler.zip",
 			CodeBucket: gcpCodeBucket,
 			BlobBucket: gcpBlobBucket,
 		}

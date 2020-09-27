@@ -25,17 +25,28 @@ func NewGCP(ctx *pulumi.Context, cfg GCPFunctionConfig) (*cloudfunctions.Functio
 		Bucket: cfg.CodeBucket.Name,
 		Source: pulumi.NewFileArchive(cfg.Path),
 	}
-	_, err := storage.NewBucketObject(ctx, filepath.Base(cfg.Path), codeObjectArgs)
+	codeObject, err := storage.NewBucketObject(ctx, filepath.Base(cfg.Path), codeObjectArgs)
 	if err != nil {
 		return nil, err
 	}
 
 	functionArgs := &cloudfunctions.FunctionArgs{
 		SourceArchiveBucket: cfg.CodeBucket.Name,
+		SourceArchiveObject: codeObject.Name,
 		Runtime:             pulumi.String("go113"),
+		EntryPoint:          pulumi.String("Handle"),
+		TriggerHttp:         pulumi.Bool(true),
+		AvailableMemoryMb:   pulumi.Int(128),
+		Labels: pulumi.Map{
+			"project":    pulumi.String("going-serverless-talk"),
+			"talk-phase": pulumi.String(cfg.TalkPhase),
+		},
+		EnvironmentVariables: pulumi.Map{
+			"BUCKET_NAME": cfg.BlobBucket.Name,
+		},
 	}
 
-	function, err := cloudfunctions.NewFunction(ctx, "basicFunction", functionArgs)
+	function, err := cloudfunctions.NewFunction(ctx, cfg.Name, functionArgs)
 	if err != nil {
 		return nil, err
 	}

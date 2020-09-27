@@ -1,4 +1,7 @@
-package main
+// package goingserverless is here instead of package main, because GCP actually requires
+// function code to be at the root of the directory. To achieve this, we rely on our
+// Makefule
+package goingserverless
 
 import (
 	"context"

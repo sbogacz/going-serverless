@@ -3,4 +3,4 @@ config:
   azure:environment: public
   azure:location: eastus2
   gcp:project: going-serverless
-  gcp:zone: us-east-2a
+  gcp:region: us-west3
