@@ -1,9 +1,8 @@
 package httperrs
 
 import (
+	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // NotFoundError lets us know that an error constitutes
@@ -24,7 +23,7 @@ func NotFound(err error, msg string) error {
 		}
 	}
 	return notFoundErr{
-		err: errors.Wrap(err, msg),
+		err: fmt.Errorf("%s: %w", msg, err),
 	}
 }
 
@@ -56,7 +55,7 @@ func InternalServer(err error, msg string) error {
 		}
 	}
 	return internalServerErr{
-		err: errors.Wrap(err, msg),
+		err: fmt.Errorf("%s: %w", msg, err),
 	}
 }
 
@@ -88,7 +87,7 @@ func BadRequest(err error, msg string) error {
 		}
 	}
 	return badRequestErr{
-		err: errors.Wrap(err, msg),
+		err: fmt.Errorf("%s: %w", msg, err),
 	}
 }
 

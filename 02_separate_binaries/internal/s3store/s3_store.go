@@ -2,13 +2,13 @@ package s3store
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/awserr"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/pkg/errors"
 	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/httperrs"
 )
 
@@ -35,7 +35,7 @@ func (ss *S3Store) Set(ctx context.Context, key, data string) error {
 
 	putReq := ss.client.PutObjectRequest(input)
 	if _, err := putReq.Send(ctx); err != nil {
-		return errors.Wrap(err, "failed to put file in S3")
+		return fmt.Errorf("failed to put file in S3: %w", err)
 	}
 	return nil
 }

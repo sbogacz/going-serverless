@@ -2,9 +2,9 @@ package toy
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
-	"github.com/pkg/errors"
 	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/httperrs"
 )
 
@@ -40,7 +40,7 @@ func (l *LocalStore) Get(ctx context.Context, key string) (string, error) {
 	l.lock.RUnlock()
 
 	if !ok {
-		return "", httperrs.NotFound(errors.Errorf("no item found at %s", key), "")
+		return "", httperrs.NotFound(fmt.Errorf("no item found at %s", key), "")
 	}
 	return data, nil
 }
@@ -52,7 +52,7 @@ func (l *LocalStore) Del(ctx context.Context, key string) error {
 	l.lock.RUnlock()
 
 	if !ok {
-		return httperrs.NotFound(errors.Errorf("no item found at %s", key), "")
+		return httperrs.NotFound(fmt.Errorf("no item found at %s", key), "")
 	}
 
 	// if we have the item, delete

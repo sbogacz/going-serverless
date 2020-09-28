@@ -1,8 +1,9 @@
+// TODO: The Azure deployment isn't complete yet
 package main
 
 import (
 	"context"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,33 +13,21 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/pkg/errors"
 	"github.com/sbogacz/going-serverless/03_separate_binaries_and_gocloud/internal/toy"
 	"github.com/urfave/cli"
 	"gocloud.dev/blob"
-	"gocloud.dev/blob/fileblob"
 	"gocloud.dev/blob/s3blob"
 )
 
 var (
-	config     = &toy.Config{}
-	s          *toy.Server
-	localStore bool
+	config = &toy.Config{}
+	s      *toy.Server
 )
-
-func flags() []cli.Flag {
-	return append(config.Flags(),
-		cli.BoolFlag{
-			Name:        "local-store",
-			Usage:       "use an in-memory backing store",
-			Destination: &localStore,
-		})
-}
 
 func main() {
 	app := cli.NewApp()
 	app.Usage = "this is the CLI version of our toy app"
-	app.Flags = flags()
+	app.Flags = config.Flags()
 	app.Action = serve
 
 	if err := app.Run(os.Args); err != nil {
@@ -53,13 +42,10 @@ func serve(c *cli.Context) error {
 	var store *blob.Bucket
 	var cleanup func()
 	var err error
-	if localStore {
-		store, cleanup, err = getLocalStore()
-	} else {
-		store, cleanup, err = getS3Store()
-	}
+	store, cleanup, err = getS3Store()
+
 	if err != nil {
-		return errors.Wrap(err, "failed to initialize store")
+		return fmt.Errorf("failed to initialize store: %w", err)
 	}
 	defer cleanup()
 	s = toy.New(config, store)
@@ -68,18 +54,6 @@ func serve(c *cli.Context) error {
 	<-sigs
 	s.Stop()
 	return nil
-}
-
-func getLocalStore() (*blob.Bucket, func(), error) {
-	dir, err := ioutil.TempDir("", "toy-test-files")
-	if err != nil {
-		return nil, nil, err
-	}
-	store, err := fileblob.NewBucket(dir)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to initialize local store")
-	}
-	return store, func() { os.RemoveAll(dir) }, nil
 }
 
 func getS3Store() (*blob.Bucket, func(), error) {

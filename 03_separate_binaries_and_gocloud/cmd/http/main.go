@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -12,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/pkg/errors"
 	"github.com/sbogacz/going-serverless/03_separate_binaries_and_gocloud/internal/toy"
 	"github.com/urfave/cli"
 	"gocloud.dev/blob"
@@ -59,7 +59,7 @@ func serve(c *cli.Context) error {
 		store, cleanup, err = getS3Store()
 	}
 	if err != nil {
-		return errors.Wrap(err, "failed to initialize store")
+		return fmt.Errorf("failed to initialize store: %w", err)
 	}
 	defer cleanup()
 	s = toy.New(config, store)
@@ -77,7 +77,7 @@ func getLocalStore() (*blob.Bucket, func(), error) {
 	}
 	store, err := fileblob.OpenBucket(dir, nil)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to initialize local store")
+		return nil, nil, fmt.Errorf("failed to initialize local store: %w", err)
 	}
 	return store, func() { os.RemoveAll(dir) }, nil
 }

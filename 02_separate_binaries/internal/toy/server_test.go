@@ -11,7 +11,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/phayes/freeport"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
@@ -103,7 +102,7 @@ func TestNotFounds(t *testing.T) {
 func setupServer() error {
 	port, err := freeport.GetFreePort()
 	if err != nil {
-		return errors.Wrap(err, "failed to get free port")
+		return fmt.Errorf("failed to get free port: %w", err)
 	}
 
 	c := &Config{

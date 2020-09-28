@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -15,7 +16,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/awserr"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/pkg/errors"
 )
 
 var (
@@ -85,7 +85,7 @@ func postFile(ctx context.Context, data string) (string, error) {
 
 	putReq := s3Client.PutObjectRequest(input)
 	if _, err = putReq.Send(ctx); err != nil {
-		return "", errors.Wrap(err, "failed to put file in S3")
+		return "", fmt.Errorf("failed to put file in S3: %w", err)
 	}
 	return key, nil
 }
@@ -147,10 +147,10 @@ func deleteInput(key string) *s3.DeleteObjectInput {
 func extractKey(req *events.APIGatewayProxyRequest) (string, error) {
 	pathParams := strings.Split(req.Path, "/")
 	if len(pathParams) < 2 {
-		return "", newBadRequestErr(errors.Errorf("no file specified"), "")
+		return "", newBadRequestErr(fmt.Errorf("no file specified"), "")
 	}
 	if len(pathParams) > 2 {
-		return "", newBadRequestErr(errors.Errorf("invalid path selection"), "")
+		return "", newBadRequestErr(fmt.Errorf("invalid path selection"), "")
 	}
 	return pathParams[1], nil
 }

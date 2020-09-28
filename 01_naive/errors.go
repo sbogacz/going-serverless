@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/pkg/errors"
 )
 
 type notFoundError interface {
@@ -22,7 +22,7 @@ func newNotFoundErr(err error, msg string) error {
 		}
 	}
 	return notFoundErr{
-		err: errors.Wrap(err, msg),
+		err: fmt.Errorf("%s: %w", msg, err),
 	}
 }
 
@@ -47,7 +47,7 @@ func newInternalServerErr(err error, msg string) error {
 		}
 	}
 	return internalServerErr{
-		err: errors.Wrap(err, msg),
+		err: fmt.Errorf("%s: %w", msg, err),
 	}
 }
 
@@ -72,7 +72,7 @@ func newBadRequestErr(err error, msg string) error {
 		}
 	}
 	return badRequestErr{
-		err: errors.Wrap(err, msg),
+		err: fmt.Errorf("%s: %w", msg, err),
 	}
 }
 

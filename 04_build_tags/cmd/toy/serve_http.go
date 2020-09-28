@@ -3,12 +3,12 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/pkg/errors"
 	"github.com/sbogacz/going-serverless/04_build_tags/internal/toy"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -41,7 +41,7 @@ func getStore() (*blob.Bucket, func(), error) {
 	}
 	store, err := fileblob.OpenBucket(dir, nil)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to initialize local store")
+		return nil, nil, fmt.Errorf("failed to initialize local store: %w", err)
 	}
 	return store, func() { os.RemoveAll(dir) }, nil
 }

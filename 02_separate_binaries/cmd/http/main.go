@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws/external"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/pkg/errors"
 	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/s3store"
 	"github.com/sbogacz/going-serverless/02_separate_binaries/internal/toy"
 	"github.com/urfave/cli"
@@ -46,7 +46,7 @@ func serve(c *cli.Context) error {
 
 	store, err := getStore()
 	if err != nil {
-		return errors.Wrap(err, "failed to initialize a store")
+		return fmt.Errorf("failed to initialize a store: %w", err)
 	}
 	s = toy.New(config, store)
 	go s.Start()

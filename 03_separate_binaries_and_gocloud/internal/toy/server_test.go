@@ -11,7 +11,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/phayes/freeport"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob/fileblob"
@@ -107,7 +106,7 @@ func TestNotFounds(t *testing.T) {
 func setupServer(dir string) error {
 	port, err := freeport.GetFreePort()
 	if err != nil {
-		return errors.Wrap(err, "failed to get free port")
+		return fmt.Errorf("failed to get free port: %w", err)
 	}
 
 	c := &Config{
@@ -119,7 +118,7 @@ func setupServer(dir string) error {
 
 	store, err := fileblob.OpenBucket(dir, nil) // HL
 	if err != nil {
-		return errors.Wrap(err, "failed to set up local store")
+		return fmt.Errorf("failed to set up local store: %w", err)
 	}
 	s = New(c, store) // HL
 	return nil
